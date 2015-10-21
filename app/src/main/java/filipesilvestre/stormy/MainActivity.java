@@ -12,6 +12,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.okhttp.Call;
@@ -25,20 +27,34 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 public class MainActivity extends AppCompatActivity {
+    //global names
     public static final String TAG = MainActivity.class.getSimpleName();
+    //class variables
     private CurrentWeather mCurrentWeather;
+    //view labels using butterknife
+    @Bind(R.id.timeLabel) TextView mTimeLabel;
+    @Bind(R.id.temperatureLabel) TextView mTemperatureLabel;
+    @Bind(R.id.humidityValue) TextView mHumidityValue;
+    @Bind(R.id.precipValue) TextView mPrecipValue;
+    @Bind(R.id.summaryLabel) TextView mSummaryLabel;
+    @Bind(R.id.iconImageView) ImageView mIconImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main); //attaches layout to this activity
+        ButterKnife.bind(this); //needs to come AFTER setContentView
 
+        //construct api string
         String apiKey = "f3c8a8b0652c5b770a4ca68b3e745878";
         double lat = 45.4818;
         double longitude = -122.6005;
         String forecastUrl = "https://api.forecast.io/forecast/" + apiKey + "/" + lat + "," + longitude;
-
+        //when view is loaded, make API call and present data to screen
         if(isNewworkAvailable()) {
 
             OkHttpClient client = new OkHttpClient();
@@ -72,6 +88,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /*
+        Function retrieves the current weather details, stores them in model,
+         and returns a new CurrentWeather object
+     */
     private CurrentWeather getCurrentDetails(String jsonData) throws JSONException {
         //grab the forecast from our API
         JSONObject forecast = new JSONObject(jsonData);
@@ -91,11 +111,17 @@ public class MainActivity extends AppCompatActivity {
         return new CurrentWeather();
     }
 
+    /*
+        creates an alert fragment
+     */
     private void alertUserAboutError() {
         AlertDialogFragment dialog = new AlertDialogFragment();
         dialog.show(getFragmentManager(), "error_dialog");
     }
 
+    /*
+        checks if the network connection is available
+     */
     public boolean isNewworkAvailable() {
         ConnectivityManager manager = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
