@@ -24,7 +24,11 @@ public class CurrentWeather {
         mTimeZone = timeZone;
     }
 
-    public int getIconId(String icon) {
+    public String getIcon() {
+        return mIcon;
+    }
+
+    public int getIconId() {
         int iconId = R.drawable.clear_day;
 
         if (mIcon.equals("clear-day")) {
@@ -82,8 +86,8 @@ public class CurrentWeather {
         mTime = time;
     }
 
-    public double getTemperature() {
-        return mTemperature;
+    public int getTemperature() {
+        return (int) Math.round(mTemperature);
     }
 
     public void setTemperature(double temperature) {
@@ -98,8 +102,9 @@ public class CurrentWeather {
         mHumidity = humidity;
     }
 
-    public double getPrecipChance() {
-        return mPrecipChance;
+    public int getPrecipChance() {
+        double precipPercentage = 100 * mPrecipChance;
+        return (int) Math.round(mPrecipChance);
     }
 
     public void setPrecipChance(double precipChance) {
