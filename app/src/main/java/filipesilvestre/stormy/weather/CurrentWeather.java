@@ -1,8 +1,10 @@
-package filipesilvestre.stormy;
+package filipesilvestre.stormy.weather;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
+
+import filipesilvestre.stormy.R;
 
 /**
  * Created by filipesilvestre on 10/20/15.

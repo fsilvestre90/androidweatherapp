@@ -1,10 +1,12 @@
-package filipesilvestre.stormy;
+package filipesilvestre.stormy.ui;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.os.Bundle;
+
+import filipesilvestre.stormy.R;
 
 /**
  * Created by filipesilvestre on 10/20/15.
