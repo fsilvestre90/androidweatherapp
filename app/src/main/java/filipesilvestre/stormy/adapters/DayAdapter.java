@@ -60,7 +60,15 @@ public class DayAdapter extends BaseAdapter {
             // because the holder is assoc with the view, if we call getTag we just need to cast as ViewHolder
             holder = (ViewHolder) convertView.getTag();
         }
-        return null;
+        //set the data
+        Day day = mDays[position];
+
+        holder.iconImageView.setImageResource(day.getIconId());
+        holder.temperatureLabel.setText(day.getTemperatureMax() + "");
+        holder.dayNameLabel.setText(day.getDayOfTheWeek());
+
+
+        return convertView;
     }
 
     private static class ViewHolder {

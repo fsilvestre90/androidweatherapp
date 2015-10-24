@@ -10,20 +10,17 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 
 import filipesilvestre.stormy.R;
+import filipesilvestre.stormy.adapters.DayAdapter;
 
 public class DailyForecastActivity extends ListActivity {
+
+    private Day[] mDays;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_daily_forecast);
-
-        String[] daysOfTheWeek = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
-        //instantiate ArrayAdapter with 'this' context, simplelist, and the array we're using
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, daysOfTheWeek);
-
-        setListAdapter(adapter);
+        DayAdapter adapter = new DayAdapter(this, mDays);
     }
 
 }
