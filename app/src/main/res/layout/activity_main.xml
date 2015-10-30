@@ -13,10 +13,10 @@
         android:layout_height="wrap_content"
         android:text="--"
         android:id="@+id/temperatureLabel"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
         android:textColor="@android:color/white"
-        android:textSize="150dp" />
+        android:textSize="150dp"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"/>
 
     <ImageView
         android:layout_width="wrap_content"
@@ -78,7 +78,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="HUMIDITY"
+                android:text="humidity"
                 android:id="@+id/humidityLabel"
                 android:textColor="#80ffffff"
                 android:gravity="center_horizontal" />
@@ -124,7 +124,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Loading temperature..."
+        android:text="loading temperature..."
         android:id="@+id/summaryLabel"
         android:textSize="18dp"
         android:textColor="@android:color/white"
