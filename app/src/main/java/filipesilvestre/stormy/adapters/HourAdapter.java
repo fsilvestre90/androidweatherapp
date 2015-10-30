@@ -13,7 +13,7 @@ import filipesilvestre.stormy.R;
 import filipesilvestre.stormy.weather.Hour;
 
 /**
- * Created by benjakuben on 2/10/15.
+ * Created by filipe silvestre.
  */
 public class HourAdapter extends RecyclerView.Adapter<HourAdapter.HourViewHolder> {
 
