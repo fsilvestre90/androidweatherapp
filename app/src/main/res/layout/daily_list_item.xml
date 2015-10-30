@@ -35,10 +35,10 @@
         android:layout_centerVertical="true"
         android:layout_toRightOf="@+id/iconImageView"
         android:layout_toEndOf="@+id/iconImageView"
-        android:paddingLeft="10dp"
         android:textColor="#ffffffff"
         android:textSize="20sp"
-        tools:text="Wednesday"/>
+        tools:text="Wednesday"
+        android:paddingLeft="10dp"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -47,10 +47,8 @@
         android:layout_alignTop="@+id/circleImageView"
         android:layout_alignBottom="@+id/circleImageView"
         android:layout_alignLeft="@+id/circleImageView"
-        android:layout_alightRight="@+id/circleImageView"
-        android:paddingLeft="10dp"
+        android:layout_alignRight="@+id/circleImageView"
         android:gravity="center"
         android:textColor="#f25019"
-        android:text="100"/>
-
+        tools:text="100"/>
 </RelativeLayout>
