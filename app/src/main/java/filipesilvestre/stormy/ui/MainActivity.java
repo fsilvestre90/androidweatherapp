@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements
         intent.putExtra(HOURLY_FORECAST, mForecast.getHourlyForecast());
         startActivity(intent);
     }
-
+    //get weather forecast
     private void getForecast() {
         String apiKey = "27974c4bc33201748eaf542a6769c3b7";
         String forecastUrl = "https://api.forecast.io/forecast/" + apiKey +
@@ -287,6 +287,7 @@ public class MainActivity extends AppCompatActivity implements
         dialog.show(getFragmentManager(), "error_dialog");
     }
 
+    //Google Play Location services stuff
     protected synchronized void buildGoogleApiClient() {
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -317,11 +318,12 @@ public class MainActivity extends AppCompatActivity implements
         if(mLastLocation != null) {
             mLatitude = mLastLocation.getLatitude();
             mLongitude = mLastLocation.getLongitude();
+
+            //after lat/long is assigned, get the forecast
+            getForecast();
         } else {
             Toast.makeText(this, R.string.no_location_detected, Toast.LENGTH_LONG).show();
         }
-        //after lat/long is assigned, get the forecast
-        getForecast();
     }
 
     @Override
