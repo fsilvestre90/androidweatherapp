@@ -11,10 +11,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Arrays;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import filipesilvestre.stormy.R;
 import filipesilvestre.stormy.adapters.DayAdapter;
 import filipesilvestre.stormy.weather.Day;
@@ -22,18 +25,24 @@ import filipesilvestre.stormy.weather.Day;
 public class DailyForecastActivity extends ListActivity {
 
     private Day[] mDays;
+    private String mCityName;
+
+    @Bind(R.id.locationLabel) TextView mLocationLabel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_daily_forecast);
+        ButterKnife.bind(this); //inject all the view objects into this controller
 
         Intent intent = getIntent();
         Parcelable[] parcelables = intent.getParcelableArrayExtra(MainActivity.DAILY_FORECAST);
         mDays = Arrays.copyOf(parcelables, parcelables.length, Day[].class);
-
+        mCityName = intent.getStringExtra("city");
         DayAdapter adapter = new DayAdapter(this, mDays);
         setListAdapter(adapter);
+
+        mLocationLabel.setText(mCityName + "");
     }
 
     @Override

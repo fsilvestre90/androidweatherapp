@@ -65,7 +65,6 @@ public class MainActivity extends AppCompatActivity implements
     private Double mLatitude;
     private Double mLongitude;
     private String mCityName;
-    private String mState;
 
     //all the labels in the view
     @Bind(R.id.timeLabel) TextView mTimeLabel;
@@ -83,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements
     public void startDailyActivity(View view) {
         Intent intent = new Intent(this, DailyForecastActivity.class);
         intent.putExtra(DAILY_FORECAST, mForecast.getDailyForecast());
+        intent.putExtra("city", mCityName);
         startActivity(intent);
     }
 
@@ -120,10 +120,7 @@ public class MainActivity extends AppCompatActivity implements
             if (addresses.size() > 0)
                 System.out.println(addresses.get(0).getLocality());
             mCityName = addresses.get(0).getLocality();
-            mState = addresses.get(0).getAdminArea();
-
             Log.d(TAG, "city name: " + addresses.get(0).getLocality());
-            Log.d(TAG, "state name: " + addresses.get(0).getAdminArea());
         }
         catch (IOException e) {
             e.printStackTrace();
@@ -254,7 +251,7 @@ public class MainActivity extends AppCompatActivity implements
         mHumidityValue.setText(currentWeather.getHumidity() + "%");
         mPrecipValue.setText(currentWeather.getPrecipChance() + "%");
         mSummaryLabel.setText(currentWeather.getSummary());
-        mLocationLabel.setText(mCityName + ", " + mState);
+        mLocationLabel.setText(mCityName + "");
 
         Drawable drawable = getResources().getDrawable(currentWeather.getIconId());
         mIconImageView.setImageDrawable(drawable);

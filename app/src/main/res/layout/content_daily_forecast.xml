@@ -37,7 +37,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="This weeks weather"
+        android:text="Next 7 Days"
         android:id="@+id/thisWeekLabel"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
@@ -48,7 +48,6 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Portland, OR"
         android:id="@+id/locationLabel"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
