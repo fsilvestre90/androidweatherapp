@@ -43,31 +43,28 @@ public class DayAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder;
+        ViewHolder holder; // view lookup cache stored in tag
 
+        // Check if an existing view is being reused, otherwise inflate the view
         if(convertView == null) {
             //this view is BRAND NEW
             convertView = LayoutInflater.from(mContext)
                     .inflate(R.layout.daily_list_item, null); //give the layout we want to inflate
-            //create the container
-            holder = new ViewHolder();
+            holder = new ViewHolder(); //create the container
             holder.iconImageView = (ImageView) convertView.findViewById(R.id.iconImageView);
             holder.temperatureLabel = (TextView) convertView.findViewById(R.id.temperatureLabel);
             holder.dayNameLabel = (TextView) convertView.findViewById(R.id.dayNameLabel);
-            //sets the tag we will use below
-            convertView.setTag(holder);
+            convertView.setTag(holder); //sets the tag we will use below
         } else {
             // because the holder is assoc with the view, if we call getTag we just need to cast as ViewHolder
             holder = (ViewHolder) convertView.getTag();
         }
-        //set the data
-        Day day = mDays[position];
-
+        // Populate the data into the template view using the data object
+        Day day = mDays[position]; //get the individual day to assign below
         holder.iconImageView.setImageResource(day.getIconId());
         holder.temperatureLabel.setText(day.getTemperatureMax() + "");
         holder.dayNameLabel.setText(day.getDayOfTheWeek());
-
-
+        // Return the completed view to render on screen
         return convertView;
     }
 

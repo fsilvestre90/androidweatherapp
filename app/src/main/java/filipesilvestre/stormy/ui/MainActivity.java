@@ -3,6 +3,8 @@ package filipesilvestre.stormy.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -17,6 +19,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.Callback;
@@ -27,8 +30,11 @@ import com.squareup.okhttp.Response;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -52,12 +58,14 @@ public class MainActivity extends AppCompatActivity implements
 
     //Google Play Location Services entry point
     private GoogleApiClient mGoogleApiClient;
+    private LocationRequest mLocationRequest;
 
-    //Geographical location
+    //Geographical data
     private Location mLastLocation;
     private Double mLatitude;
     private Double mLongitude;
-
+    private String mCityName;
+    private String mState;
 
     //all the labels in the view
     @Bind(R.id.timeLabel) TextView mTimeLabel;
@@ -68,26 +76,8 @@ public class MainActivity extends AppCompatActivity implements
     @Bind(R.id.iconImageView) ImageView mIconImageView;
     @Bind(R.id.refreshImageView) ImageView mRefreshImageView;
     @Bind(R.id.progressBar) ProgressBar mProgressBar;
+    @Bind(R.id.locationLabel) TextView mLocationLabel;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        ButterKnife.bind(this); //inject all the view objects into this controller
-        buildGoogleApiClient(); //build the Google location awareness
-
-        mProgressBar.setVisibility(View.INVISIBLE);
-
-//        final double latitude = 37.8267;
-//        final double longitude = -122.423;
-
-        mRefreshImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getForecast();
-            }
-        });
-    }
 
     @OnClick (R.id.dailyButton)
     public void startDailyActivity(View view) {
@@ -102,7 +92,87 @@ public class MainActivity extends AppCompatActivity implements
         intent.putExtra(HOURLY_FORECAST, mForecast.getHourlyForecast());
         startActivity(intent);
     }
-    //get weather forecast
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        ButterKnife.bind(this); //inject all the view objects into this controller
+        buildGoogleApiClient(); //build the Google location awareness
+        createLocationRequest();
+
+        mProgressBar.setVisibility(View.INVISIBLE);
+
+        mRefreshImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getForecast();
+            }
+        });
+    }
+
+    private void getLocaleInfo(Location loc) {
+        Geocoder gcd = new Geocoder(getBaseContext(), Locale.getDefault());
+        List<Address> addresses;
+        try {
+            addresses = gcd.getFromLocation(loc.getLatitude(),
+                    loc.getLongitude(), 1);
+            if (addresses.size() > 0)
+                System.out.println(addresses.get(0).getLocality());
+            mCityName = addresses.get(0).getLocality();
+            mState = addresses.get(0).getAdminArea();
+
+            Log.d(TAG, "city name: " + addresses.get(0).getLocality());
+            Log.d(TAG, "state name: " + addresses.get(0).getAdminArea());
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
+        }
+    }
+
+    @Override
+    public void onConnected(Bundle connectionHint) {
+        //get the current device location
+        mLastLocation = LocationServices.FusedLocationApi
+                .getLastLocation(mGoogleApiClient);
+        Log.d(TAG, "Last location: " + mLastLocation);
+        if(mLastLocation != null) {
+            mLatitude = mLastLocation.getLatitude();
+            mLongitude = mLastLocation.getLongitude();
+            getLocaleInfo(mLastLocation);
+            getForecast();
+        } else {
+            Toast.makeText(this, R.string.no_location_detected, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        // The connection to Google Play services was lost for some reason...call connect() to
+        // attempt to re-establish the connection.
+        Log.i(TAG, "Connection suspended");
+        mGoogleApiClient.connect();
+    }
+
     private void getForecast() {
         String apiKey = "27974c4bc33201748eaf542a6769c3b7";
         String forecastUrl = "https://api.forecast.io/forecast/" + apiKey +
@@ -170,8 +240,7 @@ public class MainActivity extends AppCompatActivity implements
         if (mProgressBar.getVisibility() == View.INVISIBLE) {
             mProgressBar.setVisibility(View.VISIBLE);
             mRefreshImageView.setVisibility(View.INVISIBLE);
-        }
-        else {
+        } else {
             mProgressBar.setVisibility(View.INVISIBLE);
             mRefreshImageView.setVisibility(View.VISIBLE);
         }
@@ -185,6 +254,7 @@ public class MainActivity extends AppCompatActivity implements
         mHumidityValue.setText(currentWeather.getHumidity() + "%");
         mPrecipValue.setText(currentWeather.getPrecipChance() + "%");
         mSummaryLabel.setText(currentWeather.getSummary());
+        mLocationLabel.setText(mCityName + ", " + mState);
 
         Drawable drawable = getResources().getDrawable(currentWeather.getIconId());
         mIconImageView.setImageDrawable(drawable);
@@ -196,6 +266,7 @@ public class MainActivity extends AppCompatActivity implements
         forecast.setCurrentWeather(getCurrentDetails(jsonData));
         forecast.setHourlyForecast(getHourlyForecast(jsonData));
         forecast.setDailyForecast(getDailyForecast(jsonData));
+
         return forecast;
     }
 
@@ -296,60 +367,11 @@ public class MainActivity extends AppCompatActivity implements
                 .build();
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        mGoogleApiClient.connect();
+    protected void createLocationRequest() {
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(1000 * 10);
+        mLocationRequest.setFastestInterval(1000 * 5);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (mGoogleApiClient.isConnected()) {
-            mGoogleApiClient.disconnect();
-        }
-    }
-
-    @Override
-    public void onConnected(Bundle connectionHint) {
-        //get the current device location
-        mLastLocation = LocationServices.FusedLocationApi
-                .getLastLocation(mGoogleApiClient);
-        if(mLastLocation != null) {
-            mLatitude = mLastLocation.getLatitude();
-            mLongitude = mLastLocation.getLongitude();
-
-            //after lat/long is assigned, get the forecast
-            getForecast();
-        } else {
-            Toast.makeText(this, R.string.no_location_detected, Toast.LENGTH_LONG).show();
-        }
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-        // The connection to Google Play services was lost for some reason...call connect() to
-        // attempt to re-establish the connection.
-        Log.i(TAG, "Connection suspended");
-        mGoogleApiClient.connect();
-    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

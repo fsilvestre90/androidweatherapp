@@ -24,3 +24,9 @@
     public static int d(...);
     public static int e(...);
 }
+
+-dontwarn butterknife.internal.**
+-keep class **$$ViewInjector { *; }
+-keepnames class * { @butterknife.InjectView *;}
+
+-dontwarn okio.**
