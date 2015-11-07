@@ -47,6 +47,7 @@
         android:layout_toRightOf="@+id/iconImageView"
         android:layout_toEndOf="@+id/iconImageView"
         android:textColor="#ffffffff"
+        android:layout_toStartOf="@+id/temperatureLabel"
         android:layout_toLeftOf="@+id/temperatureLabel"
         android:paddingLeft="15dp"
         android:paddingRight="15dp"

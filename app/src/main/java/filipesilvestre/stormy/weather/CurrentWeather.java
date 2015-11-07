@@ -4,8 +4,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
-import filipesilvestre.stormy.R;
-
 /**
  * Created by filipesilvestre on 10/20/15.
  */
@@ -18,7 +16,7 @@ public class CurrentWeather {
     private String mSummary;
     private String mTimeZone;
 
-    public String getTimeZone() {
+    private String getTimeZone() {
         return mTimeZone;
     }
 
@@ -46,9 +44,8 @@ public class CurrentWeather {
         SimpleDateFormat formatter = new SimpleDateFormat("h:mm a");
         formatter.setTimeZone(TimeZone.getTimeZone(getTimeZone()));
         Date dateTime = new Date(getTime() * 1000);
-        String timeString = formatter.format(dateTime);
 
-        return timeString;
+        return formatter.format(dateTime);
     }
 
     public void setTime(long time) {
@@ -64,8 +61,7 @@ public class CurrentWeather {
     }
 
     public double getHumidity() {
-        double humidityPercentage = 100 * mHumidity;
-        return humidityPercentage;
+        return 100 * mHumidity;
     }
 
     public void setHumidity(double humidity) {
@@ -74,7 +70,7 @@ public class CurrentWeather {
 
     public int getPrecipChance() {
         double precipPercentage = 100 * mPrecipChance;
-        return (int) Math.round(mPrecipChance);
+        return (int) Math.round(precipPercentage);
     }
 
     public void setPrecipChance(double precipChance) {

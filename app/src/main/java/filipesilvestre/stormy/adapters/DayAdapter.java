@@ -8,8 +8,6 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
 import filipesilvestre.stormy.R;
 import filipesilvestre.stormy.weather.Day;
 

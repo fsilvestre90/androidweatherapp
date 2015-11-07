@@ -30,7 +30,6 @@ import com.squareup.okhttp.Response;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.util.List;
@@ -207,9 +206,7 @@ public class MainActivity extends AppCompatActivity implements
                         } else {
                             alertUserAboutError();
                         }
-                    } catch (IOException e) {
-                        Log.e(TAG, "Exception caught: ", e);
-                    } catch (JSONException e) {
+                    } catch (IOException | JSONException e) {
                         Log.e(TAG, "Exception caught: ", e);
                     }
                 }

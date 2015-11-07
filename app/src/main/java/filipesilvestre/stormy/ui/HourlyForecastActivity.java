@@ -3,7 +3,6 @@ package filipesilvestre.stormy.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,11 +17,11 @@ import filipesilvestre.stormy.R;
 import filipesilvestre.stormy.adapters.HourAdapter;
 import filipesilvestre.stormy.weather.Hour;
 
-public class HourlyForecastActivity extends ActionBarActivity {
+public class HourlyForecastActivity extends AppCompatActivity {
 
     private Hour[] mHours;
 
-    @Bind(R.id.recyclerView) RecyclerView mRecyclerView;
+    @Bind(R.id.reyclerView) RecyclerView mRecyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

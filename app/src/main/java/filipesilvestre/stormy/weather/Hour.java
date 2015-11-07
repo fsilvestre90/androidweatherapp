@@ -5,7 +5,6 @@ import android.os.Parcelable;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.TimeZone;
 
 /**
  * Created by filipesilvestre on 10/22/15.
