@@ -34,11 +34,12 @@ public class DailyForecastActivity extends ListActivity {
         if(intent.getExtras() != null) {
             Parcelable[] parcelables = intent.getParcelableArrayExtra(MainActivity.DAILY_FORECAST);
             mDays = Arrays.copyOf(parcelables, parcelables.length, Day[].class);
-            mCityName = intent.getStringExtra("city");
+            mCityName = intent.getStringExtra(MainActivity.CITY_NAME);
             DayAdapter adapter = new DayAdapter(this, mDays);
             setListAdapter(adapter);
-
             mLocationLabel.setText(mCityName + "");
+        } else {
+            mLocationLabel.setText("");
         }
     }
 

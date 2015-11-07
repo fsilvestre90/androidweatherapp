@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements
     public static final String TAG = MainActivity.class.getSimpleName();
     public static final String DAILY_FORECAST = "DAILY_FORECAST";
     public static final String HOURLY_FORECAST = "HOURLY_FORECAST";
+    public static final String CITY_NAME = "CITY_NAME";
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
 
     private Forecast mForecast;
@@ -68,7 +69,6 @@ public class MainActivity extends AppCompatActivity implements
     private String mCityName;
 
     //all the labels in the view
-    @Bind(R.id.timeLabel) TextView mTimeLabel;
     @Bind(R.id.temperatureLabel) TextView mTemperatureLabel;
     @Bind(R.id.humidityValue) TextView mHumidityValue;
     @Bind(R.id.precipValue) TextView mPrecipValue;
@@ -147,6 +147,7 @@ public class MainActivity extends AppCompatActivity implements
         if (mLastLocation == null) {
             LocationServices.FusedLocationApi
                     .requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+            alertUserAboutError();
         }
         else {
             handleNewLocation(mLastLocation);
@@ -258,7 +259,6 @@ public class MainActivity extends AppCompatActivity implements
         CurrentWeather currentWeather = mForecast.getCurrentWeather();
 
         mTemperatureLabel.setText(currentWeather.getTemperature() + "");
-        mTimeLabel.setText("At " + currentWeather.getFormattedTime() + " it will be");
         mHumidityValue.setText(currentWeather.getHumidity() + "%");
         mPrecipValue.setText(currentWeather.getPrecipChance() + "%");
         mSummaryLabel.setText(currentWeather.getSummary());
@@ -381,8 +381,9 @@ public class MainActivity extends AppCompatActivity implements
             Intent intent = new Intent(this, DailyForecastActivity.class);
             startActivity(intent);
         } else {
-            Intent intent = new Intent(this, HourlyForecastActivity.class);
+            Intent intent = new Intent(this, DailyForecastActivity.class);
             intent.putExtra(DAILY_FORECAST, mForecast.getDailyForecast());
+            intent.putExtra(CITY_NAME, mCityName);
             startActivity(intent);
         }
     }
