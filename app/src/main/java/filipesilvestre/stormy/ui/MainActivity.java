@@ -2,6 +2,7 @@ package filipesilvestre.stormy.ui;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
@@ -19,6 +20,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.squareup.okhttp.Call;
@@ -45,12 +47,13 @@ import filipesilvestre.stormy.weather.Forecast;
 import filipesilvestre.stormy.weather.Hour;
 
 public class MainActivity extends AppCompatActivity implements
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     //Static Variables
     public static final String TAG = MainActivity.class.getSimpleName();
     public static final String DAILY_FORECAST = "DAILY_FORECAST";
     public static final String HOURLY_FORECAST = "HOURLY_FORECAST";
+    private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
 
     private Forecast mForecast;
 
@@ -84,7 +87,11 @@ public class MainActivity extends AppCompatActivity implements
         mProgressBar.setVisibility(View.INVISIBLE);
 
         buildGoogleApiClient(); //build the Google location awareness
-        createLocationRequest();
+
+        mLocationRequest = LocationRequest.create()
+                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                .setInterval(10 * 1000)        // 10 seconds, in milliseconds
+                .setFastestInterval(1 * 1000); // 1 second, in milliseconds
 
         mRefreshImageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,12 +101,12 @@ public class MainActivity extends AppCompatActivity implements
         });
     }
 
-    private void getLocaleInfo(Location loc) {
+    private void getLocaleInfo(double lat, double lng) {
         Geocoder gcd = new Geocoder(getBaseContext(), Locale.getDefault());
         List<Address> addresses;
         try {
-            addresses = gcd.getFromLocation(loc.getLatitude(),
-                    loc.getLongitude(), 1);
+            addresses = gcd.getFromLocation(lat,
+                    lng, 1);
             if (addresses.size() > 0)
                 System.out.println(addresses.get(0).getLocality());
             mCityName = addresses.get(0).getLocality();
@@ -123,21 +130,34 @@ public class MainActivity extends AppCompatActivity implements
             mGoogleApiClient.disconnect();
         }
     }
-
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mGoogleApiClient.isConnected()) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+            mGoogleApiClient.disconnect();
+        }
+    }
     @Override
     public void onConnected(Bundle connectionHint) {
         //get the current device location
         mLastLocation = LocationServices.FusedLocationApi
                 .getLastLocation(mGoogleApiClient);
-        Log.d(TAG, "Last location: " + mLastLocation);
-        if(mLastLocation != null) {
-            mLatitude = mLastLocation.getLatitude();
-            mLongitude = mLastLocation.getLongitude();
-            getLocaleInfo(mLastLocation);
-            getForecast();
-        } else {
-            Toast.makeText(this, R.string.no_location_detected, Toast.LENGTH_LONG).show();
+        //if we don't know the last location, find it
+        if (mLastLocation == null) {
+            LocationServices.FusedLocationApi
+                    .requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
         }
+        else {
+            handleNewLocation(mLastLocation);
+        }
+    }
+
+    private void handleNewLocation(Location location) {
+        mLatitude = location.getLatitude();
+        mLongitude = location.getLongitude();
+        getForecast();
+        getLocaleInfo(mLatitude, mLongitude);
     }
 
     @Override
@@ -147,10 +167,16 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        // The connection to Google Play services was lost for some reason...call connect() to
-        // attempt to re-establish the connection.
-        Log.i(TAG, "Connection suspended");
-        mGoogleApiClient.connect();
+        if (connectionResult.hasResolution()) {
+            try {
+                // Start an Activity that tries to resolve the error
+                connectionResult.startResolutionForResult(this, CONNECTION_FAILURE_RESOLUTION_REQUEST);
+            } catch (IntentSender.SendIntentException e) {
+                e.printStackTrace();
+            }
+        } else {
+            Log.i(TAG, "Location services connection failed with code " + connectionResult.getErrorCode());
+        }
     }
 
     private void getForecast() {
@@ -349,25 +375,32 @@ public class MainActivity extends AppCompatActivity implements
                 .build();
     }
 
-    protected void createLocationRequest() {
-        mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(1000 * 10);
-        mLocationRequest.setFastestInterval(1000 * 5);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-    }
-
     @OnClick (R.id.dailyButton)
     public void startDailyActivity(View view) {
-        Intent intent = new Intent(this, DailyForecastActivity.class);
-        intent.putExtra(DAILY_FORECAST, mForecast.getDailyForecast());
-        intent.putExtra("city", mCityName);
-        startActivity(intent);
+        if (mForecast == null) {
+            Intent intent = new Intent(this, DailyForecastActivity.class);
+            startActivity(intent);
+        } else {
+            Intent intent = new Intent(this, HourlyForecastActivity.class);
+            intent.putExtra(DAILY_FORECAST, mForecast.getDailyForecast());
+            startActivity(intent);
+        }
     }
 
     @OnClick(R.id.hourlyButton)
     public void startHourlyActivity(View view) {
-        Intent intent = new Intent(this, HourlyForecastActivity.class);
-        intent.putExtra(HOURLY_FORECAST, mForecast.getHourlyForecast());
-        startActivity(intent);
+        if(mForecast == null) {
+            Intent intent = new Intent(this, HourlyForecastActivity.class);
+            startActivity(intent);
+        } else {
+            Intent intent = new Intent(this, HourlyForecastActivity.class);
+            intent.putExtra(HOURLY_FORECAST, mForecast.getHourlyForecast());
+            startActivity(intent);
+        }
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        handleNewLocation(location);
     }
 }

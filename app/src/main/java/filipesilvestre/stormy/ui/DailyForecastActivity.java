@@ -31,13 +31,15 @@ public class DailyForecastActivity extends ListActivity {
         ButterKnife.bind(this); //inject all the view objects into this controller
 
         Intent intent = getIntent();
-        Parcelable[] parcelables = intent.getParcelableArrayExtra(MainActivity.DAILY_FORECAST);
-        mDays = Arrays.copyOf(parcelables, parcelables.length, Day[].class);
-        mCityName = intent.getStringExtra("city");
-        DayAdapter adapter = new DayAdapter(this, mDays);
-        setListAdapter(adapter);
+        if(intent.getExtras() != null) {
+            Parcelable[] parcelables = intent.getParcelableArrayExtra(MainActivity.DAILY_FORECAST);
+            mDays = Arrays.copyOf(parcelables, parcelables.length, Day[].class);
+            mCityName = intent.getStringExtra("city");
+            DayAdapter adapter = new DayAdapter(this, mDays);
+            setListAdapter(adapter);
 
-        mLocationLabel.setText(mCityName + "");
+            mLocationLabel.setText(mCityName + "");
+        }
     }
 
     @Override
