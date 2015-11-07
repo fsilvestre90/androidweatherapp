@@ -25,8 +25,21 @@
     public static int e(...);
 }
 
+# for butterknife
+-keep class butterknife.** { *; }
 -dontwarn butterknife.internal.**
--keep class **$$ViewInjector { *; }
--keepnames class * { @butterknife.InjectView *;}
+-keep class **$$ViewBinder { *; }
 
+-keepclasseswithmembernames class * {
+    @butterknife.* <fields>;
+}
+
+-keepclasseswithmembernames class * {
+    @butterknife.* <methods>;
+}
+
+# for okhttp
 -dontwarn okio.**
+
+# Preserve annotations, line numbers, and source file names
+-keepattributes *Annotation*,SourceFile,LineNumberTable

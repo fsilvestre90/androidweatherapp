@@ -45,7 +45,6 @@ import filipesilvestre.stormy.weather.Day;
 import filipesilvestre.stormy.weather.Forecast;
 import filipesilvestre.stormy.weather.Hour;
 
-
 public class MainActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
@@ -77,31 +76,16 @@ public class MainActivity extends AppCompatActivity implements
     @Bind(R.id.progressBar) ProgressBar mProgressBar;
     @Bind(R.id.locationLabel) TextView mLocationLabel;
 
-
-    @OnClick (R.id.dailyButton)
-    public void startDailyActivity(View view) {
-        Intent intent = new Intent(this, DailyForecastActivity.class);
-        intent.putExtra(DAILY_FORECAST, mForecast.getDailyForecast());
-        intent.putExtra("city", mCityName);
-        startActivity(intent);
-    }
-
-    @OnClick(R.id.hourlyButton)
-    public void startHourlyActivity(View view) {
-        Intent intent = new Intent(this, HourlyForecastActivity.class);
-        intent.putExtra(HOURLY_FORECAST, mForecast.getHourlyForecast());
-        startActivity(intent);
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this); //inject all the view objects into this controller
-        buildGoogleApiClient(); //build the Google location awareness
-        createLocationRequest();
 
         mProgressBar.setVisibility(View.INVISIBLE);
+
+        buildGoogleApiClient(); //build the Google location awareness
+        createLocationRequest();
 
         mRefreshImageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -176,8 +160,12 @@ public class MainActivity extends AppCompatActivity implements
                 "/" + mLatitude + "," + mLongitude;
 
         if (isNetworkAvailable()) {
-            toggleRefresh();
-
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    toggleRefresh();
+                }
+            });
             OkHttpClient client = new OkHttpClient();
             Request request = new Request.Builder()
                     .url(forecastUrl)
@@ -187,13 +175,13 @@ public class MainActivity extends AppCompatActivity implements
             call.enqueue(new Callback() {
                 @Override
                 public void onFailure(Request request, IOException e) {
+                    alertUserAboutError();
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             toggleRefresh();
                         }
                     });
-                    alertUserAboutError();
                 }
 
                 @Override
@@ -371,4 +359,18 @@ public class MainActivity extends AppCompatActivity implements
         mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
     }
 
+    @OnClick (R.id.dailyButton)
+    public void startDailyActivity(View view) {
+        Intent intent = new Intent(this, DailyForecastActivity.class);
+        intent.putExtra(DAILY_FORECAST, mForecast.getDailyForecast());
+        intent.putExtra("city", mCityName);
+        startActivity(intent);
+    }
+
+    @OnClick(R.id.hourlyButton)
+    public void startHourlyActivity(View view) {
+        Intent intent = new Intent(this, HourlyForecastActivity.class);
+        intent.putExtra(HOURLY_FORECAST, mForecast.getHourlyForecast());
+        startActivity(intent);
+    }
 }

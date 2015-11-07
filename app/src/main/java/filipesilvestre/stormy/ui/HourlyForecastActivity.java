@@ -18,7 +18,7 @@ import filipesilvestre.stormy.R;
 import filipesilvestre.stormy.adapters.HourAdapter;
 import filipesilvestre.stormy.weather.Hour;
 
-public class HourlyForecastActivity extends AppCompatActivity {
+public class HourlyForecastActivity extends ActionBarActivity {
 
     private Hour[] mHours;
 
