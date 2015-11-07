@@ -6,6 +6,7 @@ import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.widget.TextView;
 
 import java.util.Arrays;
 
@@ -20,6 +21,7 @@ import filipesilvestre.stormy.weather.Hour;
 public class HourlyForecastActivity extends AppCompatActivity {
 
     private Hour[] mHours;
+    @Bind(R.id.emptyLabel) TextView mEmptyLabel;
 
     @Bind(R.id.reyclerView) RecyclerView mRecyclerView;
 
@@ -36,11 +38,15 @@ public class HourlyForecastActivity extends AppCompatActivity {
 
             HourAdapter adapter = new HourAdapter(this, mHours);
             mRecyclerView.setAdapter(adapter);
-        }
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-        mRecyclerView.setLayoutManager(layoutManager);
 
-        mRecyclerView.setHasFixedSize(true);
+            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+            mRecyclerView.setLayoutManager(layoutManager);
+
+            mRecyclerView.setHasFixedSize(true);
+        } else {
+            mEmptyLabel.setText("There is no data to display.");
+        }
+
     }
 
 }
