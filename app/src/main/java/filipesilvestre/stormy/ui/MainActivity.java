@@ -88,11 +88,7 @@ public class MainActivity extends AppCompatActivity implements
         mProgressBar.setVisibility(View.INVISIBLE);
 
         buildGoogleApiClient(); //build the Google location awareness
-
-        mLocationRequest = LocationRequest.create()
-                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                .setInterval(10 * 1000)        // 10 seconds, in milliseconds
-                .setFastestInterval(1 * 1000); // 1 second, in milliseconds
+        makeLocationRequest();
 
         mRefreshImageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -118,6 +114,12 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+    private void makeLocationRequest() {
+        mLocationRequest = LocationRequest.create()
+                .setPriority(LocationRequest.PRIORITY_LOW_POWER)
+                .setInterval(10 * 1000)       // 10 seconds, in milliseconds
+                .setFastestInterval(1 * 1000); // 1 second, in milliseconds
+    }
     @Override
     protected void onStart() {
         super.onStart();
@@ -152,14 +154,14 @@ public class MainActivity extends AppCompatActivity implements
         }
         else {
             handleNewLocation(mLastLocation);
+            getForecast();
+            getLocaleInfo(mLatitude, mLongitude);
         }
     }
 
     private void handleNewLocation(Location location) {
         mLatitude = location.getLatitude();
         mLongitude = location.getLongitude();
-        getForecast();
-        getLocaleInfo(mLatitude, mLongitude);
     }
 
     @Override

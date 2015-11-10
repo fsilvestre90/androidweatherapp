@@ -30,12 +30,12 @@ public class HourlyForecastActivity extends AppCompatActivity {
         setContentView(R.layout.activity_hourly_forecast);
         ButterKnife.bind(this);
 
-        Intent intent = getIntent();
+        Bundle bundle = getIntent().getExtras();
         try {
-            Parcelable[] parcelables = intent.getParcelableArrayExtra(MainActivity.HOURLY_FORECAST);
-            if (parcelables == null) {
+            if (bundle == null) {
                 return;
             } else {
+                Parcelable[] parcelables = bundle.getParcelableArray(MainActivity.HOURLY_FORECAST);
                 //assign mHours to the daily forecast array
                 mHours = Arrays.copyOf(parcelables, parcelables.length, Hour[].class);
                 //attach the mHours array to the adapter for the view
