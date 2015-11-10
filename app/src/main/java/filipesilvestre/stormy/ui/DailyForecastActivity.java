@@ -4,6 +4,7 @@ import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -18,6 +19,7 @@ import filipesilvestre.stormy.adapters.DayAdapter;
 import filipesilvestre.stormy.weather.Day;
 
 public class DailyForecastActivity extends ListActivity {
+    public static final String TAG = DailyForecastActivity.class.getSimpleName();
 
     private Day[] mDays;
     private String mCityName;
@@ -31,15 +33,19 @@ public class DailyForecastActivity extends ListActivity {
         ButterKnife.bind(this); //inject all the view objects into this controller
 
         Intent intent = getIntent();
-        if(intent.getExtras() != null) {
+        try {
             Parcelable[] parcelables = intent.getParcelableArrayExtra(MainActivity.DAILY_FORECAST);
-            mDays = Arrays.copyOf(parcelables, parcelables.length, Day[].class);
-            mCityName = intent.getStringExtra(MainActivity.CITY_NAME);
-            DayAdapter adapter = new DayAdapter(this, mDays);
-            setListAdapter(adapter);
-            mLocationLabel.setText(mCityName + "");
-        } else {
-            mLocationLabel.setText("");
+            if(parcelables == null) {
+                return;
+            } else {
+                mDays = Arrays.copyOf(parcelables, parcelables.length, Day[].class);
+                mCityName = intent.getStringExtra(MainActivity.CITY_NAME);
+                DayAdapter adapter = new DayAdapter(this, mDays);
+                setListAdapter(adapter);
+                mLocationLabel.setText(mCityName + "");
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Exception caught: ", e);
         }
     }
 
@@ -54,8 +60,6 @@ public class DailyForecastActivity extends ListActivity {
                 dayOfWeek,
                 maxTemp,
                 conditions);
-
-
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 }

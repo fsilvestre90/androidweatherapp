@@ -23,6 +23,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.GoogleMap;
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.OkHttpClient;
@@ -377,27 +378,21 @@ public class MainActivity extends AppCompatActivity implements
 
     @OnClick (R.id.dailyButton)
     public void startDailyActivity(View view) {
-        if (mForecast == null) {
-            Intent intent = new Intent(this, DailyForecastActivity.class);
-            startActivity(intent);
-        } else {
-            Intent intent = new Intent(this, DailyForecastActivity.class);
+        Intent intent = new Intent(this, DailyForecastActivity.class);
+        if(mForecast != null) {
             intent.putExtra(DAILY_FORECAST, mForecast.getDailyForecast());
             intent.putExtra(CITY_NAME, mCityName);
-            startActivity(intent);
         }
+        startActivity(intent);
     }
 
     @OnClick(R.id.hourlyButton)
     public void startHourlyActivity(View view) {
-        if(mForecast == null) {
-            Intent intent = new Intent(this, HourlyForecastActivity.class);
-            startActivity(intent);
-        } else {
-            Intent intent = new Intent(this, HourlyForecastActivity.class);
+        Intent intent = new Intent(this, HourlyForecastActivity.class);
+        if(mForecast != null) {
             intent.putExtra(HOURLY_FORECAST, mForecast.getHourlyForecast());
-            startActivity(intent);
         }
+        startActivity(intent);
     }
 
     @Override
